@@ -9,6 +9,7 @@ from telegram import Update
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 
 user_conversations = {}
+api_key = ''
 
 
 def main():
@@ -35,6 +36,10 @@ def main():
     # add up functions
     dispatcher.add_handler(CommandHandler('ask', ask))
     dispatcher.add_handler(CommandHandler('reset', reset))
+    dispatcher.add_handler(CommandHandler('setkey', set_key_handler))
+
+    # initialize key
+    set_key(0)
 
     # To start the bot:
     updater.start_polling()
@@ -43,7 +48,7 @@ def main():
 
 def ask(update: Update, msg: CallbackContext) -> None:
     if len(msg.args) < 1:
-        update.message.reply_text("你好像没有输入问题内容, 示例: /ask 请问pytorch好用还是tensorflow好用？")
+        update.message.reply_text("你好像没有输入问题内容捏, 示例: /ask 能不能给我喵一个？")
         return
     query = ''
     for ele in msg.args:
@@ -81,7 +86,7 @@ def ask(update: Update, msg: CallbackContext) -> None:
     # headers = {"Content-Type": "application/json", "User-Agent": "PostmanRuntime/7.31.3"}
     # data = {"model": "gpt-3.5-turbo", "messages": user_conversations[user_id]['history']}
 
-    openai.api_key = get_key()
+    openai.api_key = api_key
     # openAi python sdk
     result = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
@@ -106,6 +111,16 @@ def get_key():
     return lines[0][:-1]
 
 
+def set_key(n):
+    global api_key
+    url = "https://freeopenai.xyz/api.txt"
+    response = requests.get(url)
+    lines = response.text.split("\n")
+    # print(lines[0][:-1])
+    # return lines[0][:-1]
+    api_key = lines[n][:-1]
+
+
 def reset(update: Update, msg: CallbackContext):
     global user_conversations
     user_id = update.effective_chat.id
@@ -117,6 +132,11 @@ def reset(update: Update, msg: CallbackContext):
         reply = "似乎没有历史对话, 无需重置"
 
     update.message.reply_text(reply)
+
+
+def set_key_handler(update: Update, msg: CallbackContext):
+    set_key(int(msg.args[0]))
+    update.message.reply_text('成功')
 
 
 def hello(update: Update, msg: CallbackContext):

@@ -48,7 +48,7 @@ def main():
 
 def ask(update: Update, msg: CallbackContext) -> None:
     if len(msg.args) < 1:
-        update.message.reply_text("你好像没有输入问题内容捏, 示例: /ask 能不能给我喵一个？")
+        update.message.reply_text("你好像没有输入问题内容, 示例: /ask 请问pytorch好用还是tensorflow好用？")
         return
     query = ''
     for ele in msg.args:

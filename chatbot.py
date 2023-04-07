@@ -137,7 +137,29 @@ def main():
     # Start the bot
     updater.start_polling()
 
+<<<<<<< HEAD
     updater.idle()
+=======
+# Define a few command handlers. These usually take the two arguments update and
+# context. Error handlers also receive the raised TelegramError object in error.
+def help_command(update: Update, context: CallbackContext) -> None:
+    """Send a message when the command /help is issued."""
+    update.message.reply_text('/ask + 问题进行提问\n'
+                              '/reset 重置')
+
+
+def add(update: Update, context: CallbackContext) -> None:
+    """Send a message when the command /add is issued."""
+    try:
+        global redis1
+        logging.info(context.args[0])
+        msg = context.args[0]  # /add keyword <-- this should store the keyword
+        redis1.incr(msg)
+        update.message.reply_text('You have said ' + msg + ' for ' + redis1.get(msg).decode('UTF-8') + ' times.')
+    except (IndexError, ValueError):
+        update.message.reply_text('Usage: /add <keyword>')
+
+>>>>>>> b53642ddd70a824614ec47d234cc5d83d1190611
 
 if __name__ == '__main__':
     main()

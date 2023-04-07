@@ -115,14 +115,14 @@ def get_key():
     return lines[0][:-1]
 
 
-def set_key(n):
-    global api_key
-    url = "https://freeopenai.xyz/api.txt"
-    response = requests.get(url)
-    lines = response.text.split("\n")
-    # print(lines[0][:-1])
-    # return lines[0][:-1]
-    api_key = lines[n][:-1]
+# def set_key(n):
+#     global api_key
+#     url = "https://freeopenai.xyz/api.txt"
+#     response = requests.get(url)
+#     lines = response.text.split("\n")
+#     # print(lines[0][:-1])
+#     # return lines[0][:-1]
+#     api_key = lines[n][:-1]
 
 
 def find_a_working_key():

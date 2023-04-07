@@ -20,9 +20,40 @@ good_key = []
 # config vars
 TOKEN = (os.environ['ACCESS_TOKEN'])
 
+config = {
+    'user': os.environ['user'],
+    'password': os.environ['pwd'],
+    'host': os.environ['sqlhost'],
+    'database': os.environ['db']
+}
+
+
+# Define the command names
+START_CMD = "start"
+
+def update_user_info(user_id, user_nickname):
+    now = datetime.datetime.now()
+    timestamp = now.strftime('%Y-%m-%d %H:%M:%S')
+    query = "INSERT INTO User_info_test_1 (user_id, user_nickname, user_last_active) " \
+            "VALUES (%s, %s, %s) " \
+            "ON DUPLICATE KEY UPDATE " \
+            "user_nickname = VALUES(user_nickname), " \
+            "user_last_active = VALUES(user_last_active)"
+    values = (user_id, user_nickname, timestamp)
+    cursor.execute(query, values)
+    cnx.commit()
+
+def start(update, context):
+    user_id = update.message.from_user.id
+    user_nickname = update.message.from_user.username
+    update_user_info(user_id, user_nickname)
+    message = "欢迎使用机器人！\n"
+    context.bot.send_message(chat_id=user_id, text=message, reply_markup=markup)
+
+# GPT
 def ask(update: Update, msg: CallbackContext) -> None:
     if len(msg.args) < 1:
-        update.message.reply_text("你好像没有输入问题内容捏, 示例: /ask 能不能给我喵一个？")
+        update.message.reply_text("你好像没有输入问题内容, 示例: /ask 帮我算一个塔罗看看今天运势如何？")
         return
     query = ''
     for ele in msg.args:
@@ -119,8 +150,6 @@ def main():
 
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("help", help))
-    dispatcher.add_handler(CommandHandler("recommend", recommend))
-    dispatcher.add_handler(CommandHandler("get", get))
 
     # add up functions
     dispatcher.add_handler(CommandHandler('ask', ask))
@@ -137,29 +166,7 @@ def main():
     # Start the bot
     updater.start_polling()
 
-<<<<<<< HEAD
     updater.idle()
-=======
-# Define a few command handlers. These usually take the two arguments update and
-# context. Error handlers also receive the raised TelegramError object in error.
-def help_command(update: Update, context: CallbackContext) -> None:
-    """Send a message when the command /help is issued."""
-    update.message.reply_text('/ask + 问题进行提问\n'
-                              '/reset 重置')
-
-
-def add(update: Update, context: CallbackContext) -> None:
-    """Send a message when the command /add is issued."""
-    try:
-        global redis1
-        logging.info(context.args[0])
-        msg = context.args[0]  # /add keyword <-- this should store the keyword
-        redis1.incr(msg)
-        update.message.reply_text('You have said ' + msg + ' for ' + redis1.get(msg).decode('UTF-8') + ' times.')
-    except (IndexError, ValueError):
-        update.message.reply_text('Usage: /add <keyword>')
-
->>>>>>> b53642ddd70a824614ec47d234cc5d83d1190611
 
 if __name__ == '__main__':
     main()

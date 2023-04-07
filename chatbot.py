@@ -1,13 +1,12 @@
-import random
 import logging
-import requests
-import json
 import os
-import datetime
-from telegram import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto, Update
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackQueryHandler, CallbackContext
-import openai
 from datetime import datetime, timedelta
+
+import openai
+import redis
+import requests
+from telegram import Update
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 
 user_conversations = {}
 api_key = ''
@@ -40,6 +39,7 @@ def main():
     dispatcher.add_handler(CommandHandler('setkey', set_key_handler))
 
     # initialize key
+    set_key(0)
 
     # To start the bot:
     updater.start_polling()
@@ -155,7 +155,8 @@ def echo(update, context):
 # context. Error handlers also receive the raised TelegramError object in error.
 def help_command(update: Update, context: CallbackContext) -> None:
     """Send a message when the command /help is issued."""
-    update.message.reply_text('Helping you helping you.')
+    update.message.reply_text('/ask + 问题进行提问\n'
+                              '/reset 重置')
 
 
 def add(update: Update, context: CallbackContext) -> None:

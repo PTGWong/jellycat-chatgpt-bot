@@ -1,7 +1,5 @@
 import random
 import logging
-import mysql.connector
-from mysql.connector import errorcode
 import requests
 import json
 import os

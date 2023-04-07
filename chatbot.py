@@ -17,6 +17,8 @@ def main():
     # Load your token and create an Updater for your Bot
     # config = configparser.ConfigParser()
     # config.read('config.ini')
+    global good_key
+
     updater = Updater(token=(os.environ['ACCESS_TOKEN']), use_context=True)
     dispatcher = updater.dispatcher
     global redis1
@@ -103,7 +105,6 @@ def ask(update: Update, msg: CallbackContext) -> None:
     update.message.reply_text(reply)
 
 def find_a_working_key():
-    global good_key
     url = "https://freeopenai.xyz/api.txt"
     response = requests.get(url)
     lines = response.text.split("\n")

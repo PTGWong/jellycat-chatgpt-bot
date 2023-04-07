@@ -39,7 +39,10 @@ def main():
     dispatcher.add_handler(CommandHandler('setkey', set_key_handler))
 
     # initialize key
-    set_key(0)
+    # start new thread to filter key list every hour
+    find_a_working_key()
+    t = threading.Timer(3600.0, find_a_working_key)
+    t.start()
 
     # To start the bot:
     updater.start_polling()
@@ -120,6 +123,32 @@ def set_key(n):
     # return lines[0][:-1]
     api_key = lines[n][:-1]
 
+
+def find_a_working_key():
+    global good_key
+    url = "https://freeopenai.xyz/api.txt"
+    response = requests.get(url)
+    lines = response.text.split("\n")
+
+    for key in lines:
+        openai.api_key = key[:-1]
+        try:
+            # Use the key to make a test request to the API
+            response = openai.Completion.create(
+                engine="text-davinci-002",
+                prompt="Hello, World!",
+                max_tokens=5,
+                n=1,
+                stop=None,
+                temperature=0.5,
+                timeout=5,
+                frequency_penalty=0,
+                presence_penalty=0
+            )
+            good_key.append(key[:-1])
+            logging.info('find a good key! ' + key[:-1])
+        except Exception as e:
+            continue
 
 def reset(update: Update, msg: CallbackContext):
     global user_conversations

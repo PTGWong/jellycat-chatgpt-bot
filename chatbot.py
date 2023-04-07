@@ -52,7 +52,7 @@ def main():
 
 def ask(update: Update, msg: CallbackContext) -> None:
     if len(msg.args) < 1:
-        update.message.reply_text("你好像没有输入问题内容, 示例: /ask 请问pytorch好用还是tensorflow好用？")
+        update.message.reply_text("你好像没有输入问题内容, 示例: /ask 抽一个塔罗牌分析一下今日运势？")
         return
     query = ''
     for ele in msg.args:
@@ -63,8 +63,7 @@ def ask(update: Update, msg: CallbackContext) -> None:
     logging.info("user Id: " + str(user_id) + " User Ask: " + user_message)
 
     initial_prompt = """
-        现在你将一直使用中文回答除非有别的指示。
-        如果你能理解并开始执行以上内容，请回复：“您请说”。
+        Now you are a assistant.
     """
     global user_conversations
 
@@ -89,7 +88,8 @@ def ask(update: Update, msg: CallbackContext) -> None:
     # url = "https://chatgpt-api.shn.hk/v1/"
     # headers = {"Content-Type": "application/json", "User-Agent": "PostmanRuntime/7.31.3"}
     # data = {"model": "gpt-3.5-turbo", "messages": user_conversations[user_id]['history']}
-
+    if len(good_key) < 1:
+        update.message.reply_text('Oops! we encountered a problem with GPT key, maybe try me later.')
     openai.api_key = good_key[0]
     # openAi python sdk
     result = openai.ChatCompletion.create(
@@ -97,33 +97,10 @@ def ask(update: Update, msg: CallbackContext) -> None:
         messages=user_conversations[user_id]['history']
     )
 
-    # response = requests.post(url, headers=headers, data=json.dumps(data))
-
-    # result = json.loads(response.content.strip())
-
     reply = result['choices'][0]['message']['content']
     user_conversations[user_id]['history'].append({'role': 'assistant', 'content': reply})
     logging.info("GPT: " + reply)
     update.message.reply_text(reply)
-
-
-def get_key():
-    url = "https://freeopenai.xyz/api.txt"
-    response = requests.get(url)
-    lines = response.text.split("\n")
-    # print(lines[0][:-1])
-    return lines[0][:-1]
-
-
-# def set_key(n):
-#     global api_key
-#     url = "https://freeopenai.xyz/api.txt"
-#     response = requests.get(url)
-#     lines = response.text.split("\n")
-#     # print(lines[0][:-1])
-#     # return lines[0][:-1]
-#     api_key = lines[n][:-1]
-
 
 def find_a_working_key():
     global good_key
@@ -150,6 +127,26 @@ def find_a_working_key():
             logging.info('find a good key! ' + key[:-1])
         except Exception as e:
             continue
+
+
+# def get_key():
+#     url = "https://freeopenai.xyz/api.txt"
+#     response = requests.get(url)
+#     lines = response.text.split("\n")
+#     # print(lines[0][:-1])
+#     return lines[0][:-1]
+
+
+# def set_key(n):
+#     global api_key
+#     url = "https://freeopenai.xyz/api.txt"
+#     response = requests.get(url)
+#     lines = response.text.split("\n")
+#     # print(lines[0][:-1])
+#     # return lines[0][:-1]
+#     api_key = lines[n][:-1]
+
+
 
 def reset(update: Update, msg: CallbackContext):
     global user_conversations

@@ -90,7 +90,7 @@ def ask(update: Update, msg: CallbackContext) -> None:
     # headers = {"Content-Type": "application/json", "User-Agent": "PostmanRuntime/7.31.3"}
     # data = {"model": "gpt-3.5-turbo", "messages": user_conversations[user_id]['history']}
 
-    openai.api_key = api_key
+    openai.api_key = good_key[0]
     # openAi python sdk
     result = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
